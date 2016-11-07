@@ -18,7 +18,23 @@ import Foundation
  */
 // write your code here
 
-
+class Person {
+    var firstName: String
+    var lastName: String
+    var fullName: String {
+        return firstName + " " + lastName
+    }
+    
+    init(firstName: String, lastName: String) {
+        self.firstName = firstName
+        self.lastName = lastName
+    }
+    
+    func greet(_ person: Person) -> String {
+        return "Hello, \(person.firstName)!"
+    }
+    
+}
 
 
 
@@ -26,6 +42,7 @@ import Foundation
 
 // Test
 let person = Person(firstName: "Alice", lastName: "Johnson")
+person.greet(person)
 assert(person.firstName == "Alice", person.firstName)
 assert(person.lastName == "Johnson", person.lastName)
 
@@ -42,6 +59,8 @@ assert(person.lastName == "Johnson", person.lastName)
 
 // Test
 assert(person.fullName == "Alice Johnson", person.fullName)
+person.fullName
+
 
 /*: section3
  
@@ -54,15 +73,15 @@ assert(person.fullName == "Alice Johnson", person.fullName)
 
 
 
-
-
-
-
 // Test
 let friend = Person(firstName: "Phil", lastName: "Davies")
+
 var greeting = person.greet(friend)
+
 assert(greeting == "Hello, Phil!", greeting)
+
 greeting = friend.greet(person)
+
 assert(greeting == "Hello, Alice!", greeting)
 
 /*: section4
@@ -82,7 +101,23 @@ extension Double {
 }
 
 // write your code here
-
+class Transaction {
+    var type: String
+    var amount: Double
+    
+    var description: String {
+        switch type {
+            case "in": return "Transaction: credit in the amount of $\(amount.toMoney)"
+            case "out": return "Transaction: debit in the amount of $\(amount.toMoney)"
+            default: return "error"
+        }
+    }
+    
+    init(type: String, amount: Double) {
+        self.type = type
+        self.amount = amount
+    }
+}
 
 
 
@@ -100,22 +135,7 @@ let transaction2 = Transaction(type: "out", amount: 1.2)
 assert(transaction2.type == "out", transaction2.type)
 assert(transaction2.amount == 1.2, "\(transaction2.amount)")
 
-/*: section5
- 
- ## Question 5
- 
- Add a computed property called `description` to the `Transaction` class you created in Question #4. This property should return the string "Transaction: <credit or debit> in the amount of $<amount>.
- 
- Note that formatting `Double`s so they have two decimal places (like money) can be a bit difficult, so a method has been added to the `Double` class for you to help you with that. Assuming `amount` is a double, you can call `double.toMoney` to get a string that formats the `Double` to two decimal places.
- */
-
-
-
-
-
-
-
-
+transaction2.description
 
 
 // Test
@@ -134,7 +154,41 @@ assert(transaction2.description == "Transaction: debit in the amount of $1.20", 
  */
 // write your code here
 
-
+class BankAccount {
+    var owner: Person
+    var transactions: [Transaction]
+    
+    init(owner: Person) {
+        self.owner = owner
+        self.transactions = [ ]
+    }
+    
+    func deposit(_ deposit: Double) {
+        let transaction = Transaction(type: "in", amount: deposit)
+        transactions.append(transaction)
+    }
+    
+    func withdraw(_ withdraw: Double) {
+        let transaction = Transaction(type: "out", amount: withdraw)
+        transactions.append(transaction)
+    }
+    
+    func balance() -> Double {
+        var inAmount: Double = 0
+        var outAmount: Double = 0
+        for transaction in transactions {
+            if transaction.type == "in" {
+                inAmount += transaction.amount
+            }
+            else if transaction.type == "out" {
+                    outAmount += transaction.amount
+            } else {
+                return 0
+            }
+        }
+        return (inAmount - outAmount)
+    }
+}
 
 
 
@@ -156,20 +210,12 @@ assert(personBankAccount.transactions.isEmpty)
  */
 
 
-
-
-
-
-
-
-
-
-
 // Test
 personBankAccount.deposit(100.0)
 assert(personBankAccount.transactions.count == 1, "\(personBankAccount.transactions.count)")
 personBankAccount.deposit(10.0)
 assert(personBankAccount.transactions.count == 2, "\(personBankAccount.transactions.count)")
+let txn = personBankAccount.transactions
 
 /*: section8
  
@@ -180,19 +226,13 @@ assert(personBankAccount.transactions.count == 2, "\(personBankAccount.transacti
 
 
 
-
-
-
-
-
-
-
 // Test
 personBankAccount.withdraw(25.0)
 assert(personBankAccount.transactions.count == 3, "\(personBankAccount.transactions.count)")
 personBankAccount.withdraw(10.5)
 assert(personBankAccount.transactions.count == 4, "\(personBankAccount.transactions.count)")
-
+personBankAccount.transactions
+personBankAccount.balance()
 /*: section9
  
  ## Question 9
@@ -211,7 +251,7 @@ assert(personBankAccount.transactions.count == 4, "\(personBankAccount.transacti
 
 
 // Test
-assert(personBankAccount.balance == 74.5, personBankAccount.balance.toMoney)
+assert(personBankAccount.balance == 74.5, personBankAccount.balance)
 
 /*: finale
  
